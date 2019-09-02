@@ -1,21 +1,16 @@
 class Tile
-  attr_reader :symbol
-  @@blank = " "
+  attr_reader :symbol, :occupied
+  alias_method :occupied?, :occupied
 
   def initialize
-    @symbol = @@blank
+    @symbol = " "
     @occupied = false
-  end
-
-  def occupied?
-    @occupied
   end
 
   def symbol=(symbol)
     @symbol = symbol
     @occupied = true
   end
-
 end
 
 class Player
@@ -37,6 +32,7 @@ class Board
   end
 
   def display
+    system("clear") || system("cls")
     puts "   1   2   3 \n"  +                                                             #    1   2   3  
          "A  #{@tiles[:A1].symbol} | #{@tiles[:A2].symbol} | #{@tiles[:A3].symbol} \n" +  # A    |   |   
          "  ---|---|---\n" +                                                              #   ---|---|---
@@ -52,15 +48,22 @@ class Board
   end
 
   def make_move(player)
-    valid_move = false
-    puts "#{player.name}, please enter the coordinate where you would like to place an '#{player.symbol}'."
-    until valid_move
+    puts "\n#{player.name}," 
+    puts "please enter the coordinate where" 
+    puts "you would like to place an '#{player.symbol}'"
+    coord = get_valid_move
+    @tiles[coord].symbol=(player.symbol)
+  end
+
+  private
+
+  def get_valid_move
+    while true
       coord = gets.chomp.upcase.to_sym    
       next puts "#{coord} is not an option, please enter a valid coordintate" unless @tiles[coord]
       next puts "#{coord} is occupied, please enter another coordinate" if @tiles[coord].occupied?
-      valid_move = true
+      return coord
     end
-    @tiles[coord].symbol=(player.symbol)
   end
 end
 
@@ -85,13 +88,16 @@ def new_game
   end
 end
 
+private
+
 def get_players
-  puts "Player 'X', enter your name:"
+  system("clear") || system("cls")
+  print "Player 'X', enter your name: "
   player_x = Player.new(gets.chomp, :X)
-  puts "Player 'O', enter your name:"
+  print "Player 'O', enter your name: "
   player_o = Player.new(gets.chomp, :O)
   [player_x, player_o]
 end
 
-new_game
+
 
